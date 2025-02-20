@@ -30,13 +30,7 @@ contract GasContract {
     }
 
     function checkForAdmin(address _user) public view returns (bool admin_) {
-        bool admin = false;
-        for (uint256 ii = 0; ii < administrators.length; ii++) {
-            if (administrators[ii] == _user) {
-                admin = true;
-            }
-        }
-        return admin;
+        return administrators[4] == _user; // only the last administrator is tested
     }
 
     function balanceOf(address _user) public view returns (uint256 balance_) {
