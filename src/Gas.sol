@@ -9,9 +9,6 @@ contract GasContract {
     mapping(address => uint256) public whitelist;
     address[5] public administrators;
 
-    uint256 wasLastOdd = 1;
-    mapping(address => uint256) public isOddWhitelistUser;
-    
     mapping(address => uint256) public whiteListAmount;
 
     event AddedToWhitelist(address userAddress, uint256 tier);
