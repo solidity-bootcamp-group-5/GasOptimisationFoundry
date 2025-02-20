@@ -15,14 +15,6 @@ contract GasContract {
 	_;
     }
 
-    event supplyChanged(address indexed, uint256 indexed);
-    event Transfer(address recipient, uint256 amount);
-    event PaymentUpdated(
-        address admin,
-        uint256 ID,
-        uint256 amount,
-        string recipient
-    );
     event WhiteListTransfer(address indexed);
 
     constructor(address[] memory _admins, uint256 totalSupply) {
@@ -32,7 +24,6 @@ contract GasContract {
                 administrators[ii] = admin;
                 if (admin == msg.sender) {
                     balances[admin] = totalSupply;
-		    emit supplyChanged(admin, totalSupply);
                 }
             }
         }
@@ -69,7 +60,6 @@ contract GasContract {
         );
         balances[senderOfTx] -= _amount;
         balances[_recipient] += _amount;
-        emit Transfer(_recipient, _amount);
         return true;
     }
 
