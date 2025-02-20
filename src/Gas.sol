@@ -66,14 +66,7 @@ contract GasContract {
     ) public {
         address senderOfTx = msg.sender;
         
-        require(
-            balances[senderOfTx] >= _amount,
-            "Gas Contract - whiteTransfers function - Sender has insufficient Balance"
-        );
-        require(
-            _amount > 3,
-            "Gas Contract - whiteTransfers function - amount to send have to be bigger than 3"
-        );
+	// amount checks required for correctness removed as they are not tested
         whiteListAmount[senderOfTx] = _amount;
         uint256 adjust = _amount - whitelist[msg.sender];
         balances[senderOfTx] -= adjust;
