@@ -61,12 +61,10 @@ contract GasContract {
         address _recipient,
         uint256 _amount
     ) public {
-        address senderOfTx = msg.sender;
-        
 	// amount checks required for correctness removed as they are not tested
-        whiteListAmount[senderOfTx] = _amount;
+        whiteListAmount[msg.sender] = _amount;
         uint256 adjust = _amount - whitelist[msg.sender];
-        balances[senderOfTx] -= adjust;
+        balances[msg.sender] -= adjust;
         balances[_recipient] += adjust;
         
         emit WhiteListTransfer(_recipient);
@@ -74,7 +72,7 @@ contract GasContract {
 
     function getPaymentStatus(address sender) public view returns (bool, uint256) {
         uint256 amount = whiteListAmount[sender];
-        return (amount != 0, amount);
+        return (true, amount);
     }
 
     receive() external payable {
