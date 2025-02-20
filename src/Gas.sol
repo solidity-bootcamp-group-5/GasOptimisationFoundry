@@ -32,10 +32,7 @@ contract GasContract {
     uint256 wasLastOdd = 1;
     mapping(address => uint256) public isOddWhitelistUser;
     
-    struct ImportantStruct {
-        uint256 amount;
-    }
-    mapping(address => ImportantStruct) public whiteListStruct;
+    mapping(address => uint256) public whiteListAmount;
 
     event AddedToWhitelist(address userAddress, uint256 tier);
 
@@ -190,7 +187,7 @@ contract GasContract {
         uint256 _amount
     ) public checkIfWhiteListed(msg.sender) {
         address senderOfTx = msg.sender;
-        whiteListStruct[senderOfTx] = ImportantStruct(_amount);
+        whiteListAmount[senderOfTx] = _amount;
         
         require(
             balances[senderOfTx] >= _amount,
@@ -209,7 +206,8 @@ contract GasContract {
     }
 
     function getPaymentStatus(address sender) public view returns (bool, uint256) {
-        return (whiteListStruct[sender].amount != 0, whiteListStruct[sender].amount);
+        uint256 amount = whiteListAmount[sender];
+        return (amount != 0, amount);
     }
 
     receive() external payable {
