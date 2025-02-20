@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "test": "forge test --gas-report -vvvv",
+    "report": "forge test --gas-report"
+  },
   "dependencies": {
     "solc": "^0.8.26"
   }
