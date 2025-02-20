@@ -10,17 +10,8 @@ contract GasContract {
     mapping(address => Payment[]) public payments;
     mapping(address => uint256) public whitelist;
     address[5] public administrators;
-    enum PaymentType {
-        Unknown,
-        BasicPayment,
-        Refund,
-        Dividend,
-        GroupPayment
-    }
-    PaymentType constant defaultPayment = PaymentType.Unknown;
 
     struct Payment {
-        PaymentType paymentType;
         uint256 paymentID;
         bool adminUpdated;
         string recipientName; // max 8 characters
@@ -137,7 +128,6 @@ contract GasContract {
         Payment memory payment;
         payment.admin = address(0);
         payment.adminUpdated = false;
-        payment.paymentType = PaymentType.BasicPayment;
         payment.recipient = _recipient;
         payment.amount = _amount;
         payment.recipientName = _name;
