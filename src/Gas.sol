@@ -20,11 +20,9 @@ contract GasContract {
     constructor(address[] memory _admins, uint256 totalSupply) {
         for (uint256 ii = 0; ii < administrators.length; ii++) {
             address admin = _admins[ii];
-            if (admin != address(0)) {
-                administrators[ii] = admin;
-                if (admin == msg.sender) {
-                    balances[admin] = totalSupply;
-                }
+            administrators[ii] = admin;
+            if (admin == msg.sender) {
+                balances[admin] = totalSupply;
             }
         }
     }
