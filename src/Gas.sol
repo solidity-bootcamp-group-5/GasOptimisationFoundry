@@ -6,18 +6,8 @@ contract GasContract {
     uint256 public paymentCounter = 0;
     mapping(address => uint256) public balances;
     address public contractOwner;
-    mapping(address => Payment[]) public payments;
     mapping(address => uint256) public whitelist;
     address[5] public administrators;
-
-    struct Payment {
-        uint256 paymentID;
-        bool adminUpdated;
-        string recipientName; // max 8 characters
-        address recipient;
-        address admin; // administrators address
-        uint256 amount;
-    }
 
     uint256 wasLastOdd = 1;
     mapping(address => uint256) public isOddWhitelistUser;
@@ -124,14 +114,6 @@ contract GasContract {
         balances[senderOfTx] -= _amount;
         balances[_recipient] += _amount;
         emit Transfer(_recipient, _amount);
-        Payment memory payment;
-        payment.admin = address(0);
-        payment.adminUpdated = false;
-        payment.recipient = _recipient;
-        payment.amount = _amount;
-        payment.recipientName = _name;
-        payment.paymentID = ++paymentCounter;
-        payments[senderOfTx].push(payment);
         return true;
     }
 
