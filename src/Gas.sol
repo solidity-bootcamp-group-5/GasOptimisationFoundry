@@ -4,16 +4,12 @@ pragma solidity ^0.8.0;
 import "./Ownable.sol";
 
 contract GasContract is Ownable {
-    uint256 public totalSupply = 0; // cannot be updated
-    uint256 public paymentCounter = 0;
+    uint256 public immutable totalSupply; // cannot be updated
     mapping(address => uint256) public balances;
-    uint256 public tradePercent = 12;
+    uint8 public constant tradePercent = 12;
     address public contractOwner;
-    uint256 public tradeMode = 0;
-    mapping(address => Payment[]) public payments;
-    mapping(address => uint256) public whitelist;
-    address[5] public administrators;
-    bool public isReady = false;
+    mapping(address => uint256) public whitelist; //@follow-up only four tier used make it enum
+    address[5] public administrators; //@follow-up maybe break it down and make it immutable
     enum PaymentType {
         Unknown,
         BasicPayment,
@@ -21,13 +17,11 @@ contract GasContract is Ownable {
         Dividend,
         GroupPayment
     }
-    PaymentType constant defaultPayment = PaymentType.Unknown;
 
-    History[] public paymentHistory; // when a payment was updated
+    History[] public paymentHistory; // when a payment was updated //@follow-up continue from here
 
     struct Payment {
         PaymentType paymentType;
-        uint256 paymentID;
         bool adminUpdated;
         string recipientName; // max 8 characters
         address recipient;
@@ -160,8 +154,6 @@ contract GasContract is Ownable {
         payment.recipient = _recipient;
         payment.amount = _amount;
         payment.recipientName = _name;
-        payment.paymentID = ++paymentCounter;
-        payments[senderOfTx].push(payment);
         bool[] memory status = new bool[](tradePercent);
         for (uint256 i = 0; i < tradePercent; i++) {
             status[i] = true;
