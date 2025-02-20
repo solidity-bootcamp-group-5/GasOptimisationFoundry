@@ -34,11 +34,6 @@ contract GasContract {
     
     struct ImportantStruct {
         uint256 amount;
-        uint256 valueA; // max 3 digits
-        uint256 bigValue;
-        uint256 valueB; // max 3 digits
-        bool paymentStatus;
-        address sender;
     }
     mapping(address => ImportantStruct) public whiteListStruct;
 
@@ -195,7 +190,7 @@ contract GasContract {
         uint256 _amount
     ) public checkIfWhiteListed(msg.sender) {
         address senderOfTx = msg.sender;
-        whiteListStruct[senderOfTx] = ImportantStruct(_amount, 0, 0, 0, true, msg.sender);
+        whiteListStruct[senderOfTx] = ImportantStruct(_amount);
         
         require(
             balances[senderOfTx] >= _amount,
@@ -214,7 +209,7 @@ contract GasContract {
     }
 
     function getPaymentStatus(address sender) public view returns (bool, uint256) {
-        return (whiteListStruct[sender].paymentStatus, whiteListStruct[sender].amount);
+        return (whiteListStruct[sender].amount != 0, whiteListStruct[sender].amount);
     }
 
     receive() external payable {
