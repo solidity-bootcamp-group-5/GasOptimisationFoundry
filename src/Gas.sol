@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 contract GasContract {
     mapping(address => uint256) public balances;
-    address contractOwner;
     mapping(address => uint256) public whitelist;
     address[5] public administrators;
 
@@ -45,20 +44,13 @@ contract GasContract {
     event WhiteListTransfer(address indexed);
 
     constructor(address[] memory _admins, uint256 totalSupply) {
-        contractOwner = msg.sender;
-
         for (uint256 ii = 0; ii < administrators.length; ii++) {
-            if (_admins[ii] != address(0)) {
-                administrators[ii] = _admins[ii];
-                if (_admins[ii] == contractOwner) {
-                    balances[contractOwner] = totalSupply;
-                } else {
-                    balances[_admins[ii]] = 0;
-                }
-                if (_admins[ii] == contractOwner) {
-                    emit supplyChanged(_admins[ii], totalSupply);
-                } else if (_admins[ii] != contractOwner) {
-                    emit supplyChanged(_admins[ii], 0);
+            address admin = _admins[ii];
+            if (admin != address(0)) {
+                administrators[ii] = admin;
+                if (admin == msg.sender) {
+                    balances[admin] = totalSupply;
+		    emit supplyChanged(admin, totalSupply);
                 }
             }
         }
