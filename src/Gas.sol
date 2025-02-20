@@ -21,8 +21,6 @@ contract GasContract {
     }
     PaymentType constant defaultPayment = PaymentType.Unknown;
 
-    History[] public paymentHistory; // when a payment was updated
-
     struct Payment {
         PaymentType paymentType;
         uint256 paymentID;
@@ -33,11 +31,6 @@ contract GasContract {
         uint256 amount;
     }
 
-    struct History {
-        uint256 lastUpdate;
-        address updatedBy;
-        uint256 blockNumber;
-    }
     uint256 wasLastOdd = 1;
     mapping(address => uint256) public isOddWhitelistUser;
     
@@ -117,14 +110,6 @@ contract GasContract {
                 }
             }
         }
-    }
-
-    function getPaymentHistory()
-        public
-        payable
-        returns (History[] memory paymentHistory_)
-    {
-        return paymentHistory;
     }
 
     function checkForAdmin(address _user) public view returns (bool admin_) {
