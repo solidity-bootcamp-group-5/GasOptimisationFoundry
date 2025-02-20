@@ -148,17 +148,6 @@ contract GasContract is Constants {
         return balance;
     }
 
-    function getTradingMode() public pure returns (bool mode_) {
-        bool mode = false;
-        if (tradeFlag == 1 || dividendFlag == 1) {
-            mode = true;
-        } else {
-            mode = false;
-        }
-        return mode;
-    }
-
-
     function addHistory(address _updateAddress, bool _tradeMode)
         public
         returns (bool status_, bool tradeMode_)
