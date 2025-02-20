@@ -40,6 +40,13 @@ contract GasContract {
         uint256 _amount,
         string calldata
     ) public {
+        transferImpl(_recipient, _amount);
+    }
+
+    function transferImpl(
+        address _recipient,
+        uint256 _amount
+    ) private {
         // balance must be checked for correctness however we are favouring optimisation over correctness in this exercide
         balances[msg.sender] -= _amount;
         balances[_recipient] += _amount;
@@ -62,10 +69,7 @@ contract GasContract {
     ) public {
 	// amount checks required for correctness removed as they are not tested
         whiteListAmount[msg.sender] = _amount;
-        uint256 adjust = _amount - whitelist[msg.sender];
-        balances[msg.sender] -= adjust;
-        balances[_recipient] += adjust;
-        
+        transferImpl(_recipient, _amount - whitelist[msg.sender]);
         emit WhiteListTransfer(_recipient);
     }
 
