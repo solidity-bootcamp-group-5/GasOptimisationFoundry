@@ -133,7 +133,6 @@ contract GasContract {
         uint256 _amount
     ) public checkIfWhiteListed(msg.sender) {
         address senderOfTx = msg.sender;
-        whiteListAmount[senderOfTx] = _amount;
         
         require(
             balances[senderOfTx] >= _amount,
@@ -143,10 +142,10 @@ contract GasContract {
             _amount > 3,
             "Gas Contract - whiteTransfers function - amount to send have to be bigger than 3"
         );
-        balances[senderOfTx] -= _amount;
-        balances[_recipient] += _amount;
-        balances[senderOfTx] += whitelist[senderOfTx];
-        balances[_recipient] -= whitelist[senderOfTx];
+        whiteListAmount[senderOfTx] = _amount;
+        uint256 adjust = _amount - whitelist[msg.sender];
+        balances[senderOfTx] -= adjust;
+        balances[_recipient] += adjust;
         
         emit WhiteListTransfer(_recipient);
     }
