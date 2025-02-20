@@ -74,13 +74,4 @@ contract GasContract {
         uint256 amount = whiteListAmount[sender];
         return (true, amount);
     }
-
-    receive() external payable {
-        payable(msg.sender).transfer(msg.value);
-    }
-
-
-    fallback() external payable {
-         payable(msg.sender).transfer(msg.value);
-    }
 }
