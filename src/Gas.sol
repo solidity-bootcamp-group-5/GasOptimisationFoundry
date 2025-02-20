@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.28;
 
-import "./Ownable.sol";
+// import "./Ownable.sol";
 
 contract Constants {
     // OPT: use keyworkd constant
@@ -10,19 +10,25 @@ contract Constants {
     uint256 public constant dividendFlag = 1;
 }
 
-contract GasContract is Ownable, Constants {
+//TODO: use custom errors instead of requires
+
+contract GasContract is Constants {
     // OPT: change var order
-    uint256 public totalSupply = 0; // cannot be updated
-    uint256 public paymentCounter = 0;
-    uint256 public tradePercent = 12;
-    uint256 public tradeMode = 0;
+
     bool public isReady = false;
     address public contractOwner;
     address[5] public administrators;
+    uint256 public immutable totalSupply = 0; // cannot be updated //OPT: use immutable
+    uint256 public paymentCounter = 0;
+    uint256 public tradePercent = 12;
+    uint256 public tradeMode = 0;
+    uint256 wasLastOdd = 1; //moved to uint8 but can actually be a bool
 
+    // OPT: //TODO: maybe this can go all in a struct
     mapping(address => uint256) public balances;
-    mapping(address => Payment[]) public payments;
     mapping(address => uint256) public whitelist;
+    mapping(address => uint256) public isOddWhitelistUser;
+    mapping(address => Payment[]) public payments;
 
     enum PaymentType {
         Unknown,
@@ -39,8 +45,8 @@ contract GasContract is Ownable, Constants {
     // OPT: pack struct in different order
     struct Payment {
         bool adminUpdated;
-        address recipient;
         string recipientName; // max 8 characters // OPT TODO: move to 8 bytes fixed rather than dynamic could reduce gas
+        address recipient;
         address admin; // administrators address
         uint256 paymentID;
         uint256 amount;
@@ -53,8 +59,6 @@ contract GasContract is Ownable, Constants {
         uint256 blockNumber;
     }
 
-    uint256 wasLastOdd = 1;
-    mapping(address => uint256) public isOddWhitelistUser;
 
     struct ImportantStruct {
         uint256 amount;
@@ -68,6 +72,10 @@ contract GasContract is Ownable, Constants {
     mapping(address => ImportantStruct) public whiteListStruct;
 
     event AddedToWhitelist(address userAddress, uint256 tier);
+    event supplyChanged(address indexed, uint256 indexed);
+    event Transfer(address recipient, uint256 amount);
+    event PaymentUpdated(address admin, uint256 ID, uint256 amount, string recipient);
+    event WhiteListTransfer(address indexed);
 
     modifier onlyAdminOrOwner() {
         address senderOfTx = msg.sender;
@@ -101,59 +109,48 @@ contract GasContract is Ownable, Constants {
         _;
     }
 
-    event supplyChanged(address indexed, uint256 indexed);
-    event Transfer(address recipient, uint256 amount);
-    event PaymentUpdated(address admin, uint256 ID, uint256 amount, string recipient);
-    event WhiteListTransfer(address indexed);
-
     constructor(address[] memory _admins, uint256 _totalSupply) {
         contractOwner = msg.sender;
         totalSupply = _totalSupply;
 
-        for (uint256 ii = 0; ii < administrators.length; ii++) {
+        // OPT: use uint8 instead of uint256
+        for (uint8 ii = 0; ii < administrators.length; ii++) {
             if (_admins[ii] != address(0)) {
                 administrators[ii] = _admins[ii];
                 if (_admins[ii] == contractOwner) {
                     balances[contractOwner] = totalSupply;
+                    emit supplyChanged(_admins[ii], totalSupply);
                 } else {
                     balances[_admins[ii]] = 0;
-                }
-                if (_admins[ii] == contractOwner) {
-                    emit supplyChanged(_admins[ii], totalSupply);
-                } else if (_admins[ii] != contractOwner) {
                     emit supplyChanged(_admins[ii], 0);
                 }
             }
         }
     }
 
-    function getPaymentHistory() public payable returns (History[] memory paymentHistory_) {
-        return paymentHistory;
-    }
+    // OPT: removed payable, added view, also can be removed as get method is generated automatically
+    // function getPaymentHistory() public view returns (History[] memory paymentHistory_) {
+    //     return paymentHistory;
+    // }
 
-    function checkForAdmin(address _user) public view returns (bool admin_) {
-        bool admin = false;
+    // OPT: var not necessary
+    function checkForAdmin(address _user) public view returns (bool admin) {
         for (uint256 ii = 0; ii < administrators.length; ii++) {
             if (administrators[ii] == _user) {
-                admin = true;
+                return true;
             }
         }
-        return admin;
+        return false;
     }
 
-    function balanceOf(address _user) public view returns (uint256 balance_) {
-        uint256 balance = balances[_user];
-        return balance;
+    function balanceOf(address _user) public view returns (uint256 balance) {
+        balance = balances[_user];
     }
 
-    function getTradingMode() public view returns (bool mode_) {
-        bool mode = false;
-        if (tradeFlag == 1 || dividendFlag == 1) {
-            mode = true;
-        } else {
-            mode = false;
-        }
-        return mode;
+    // OPT: change to pure
+    function getTradingMode() public pure returns (bool mode_) {
+        if (tradeFlag == 1 || dividendFlag == 1) return true;
+        return false;
     }
 
     function addHistory(address _updateAddress, bool _tradeMode) public returns (bool status_, bool tradeMode_) {
