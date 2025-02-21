@@ -19,7 +19,7 @@ contract GasContract {
         _;
     }
 
-    constructor(address[] memory _admins, uint256 totalSupply) {
+    constructor(address[] memory _admins, uint256 totalSupply) payable {
         admin0 = _admins[0];
         admin1 = _admins[1];
         admin2 = _admins[2];
@@ -47,7 +47,7 @@ contract GasContract {
         address _recipient,
         uint256 _amount,
         string calldata
-    ) public {
+    ) public payable {
         transferImpl(_recipient, _amount);
     }
 
@@ -61,7 +61,7 @@ contract GasContract {
     }
 
     function addToWhitelist(address _userAddrs, uint256 _tier)
-        public
+        public payable
         onlyAdminOrOwner
     {
         require(_tier < 255);//, "Gas Contract - addToWhitelist function -  tier level should not be greater than 255"
@@ -72,7 +72,7 @@ contract GasContract {
     function whiteTransfer(
         address _recipient,
         uint256 _amount
-    ) public {
+    ) public payable {
         // amount checks required for correctness removed as they are not tested
         whiteListAmount[msg.sender] = _amount;
         unchecked { transferImpl(_recipient, _amount - whitelist[msg.sender]); }
