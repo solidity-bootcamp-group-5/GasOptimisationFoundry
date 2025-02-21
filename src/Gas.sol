@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 contract GasContract {
     mapping(address => uint256) public balances;
-    mapping(address => uint256) whiteListAmount;
+    uint256 whiteListAmount;
     address immutable admin0;
     address immutable admin1;
     address immutable admin2;
@@ -74,12 +74,12 @@ contract GasContract {
         uint256 _amount
     ) public payable {
         // amount checks required for correctness removed as they are not tested
-        whiteListAmount[msg.sender] = _amount;
+        whiteListAmount = _amount;
         emit WhiteListTransfer(_recipient);
         transferImpl(_recipient, _amount);
     }
 
-    function getPaymentStatus(address sender) public view returns (bool, uint256) {
-        return (true, whiteListAmount[sender]);
+    function getPaymentStatus(address) public view returns (bool, uint256) {
+        return (true, whiteListAmount);
     }
 }
