@@ -1,41 +1,39 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0; 
+pragma solidity ^0.8.0;
 
 address constant ADMIN = address(0x1234);
 
 contract GasContract {
     mapping(address => uint256) public balances;
     mapping(address => uint256) public whitelist;
+    mapping(address => uint256) whiteListAmount;
     address immutable admin0;
     address immutable admin1;
     address immutable admin2;
     address immutable admin3;
 
-    mapping(address => uint256) whiteListAmount;
-
     event AddedToWhitelist(address userAddress, uint256 tier);
+    event WhiteListTransfer(address indexed);
 
     modifier onlyAdminOrOwner() {
         if (!checkForAdmin(msg.sender)) revert();
-	_;
+        _;
     }
-
-    event WhiteListTransfer(address indexed);
 
     constructor(address[] memory _admins, uint256 totalSupply) {
         balances[ADMIN] = totalSupply;
-	admin0 = _admins[0];
-	admin1 = _admins[1];
-	admin2 = _admins[2];
-	admin3 = _admins[3];
+        admin0 = _admins[0];
+        admin1 = _admins[1];
+        admin2 = _admins[2];
+        admin3 = _admins[3];
     }
 
     function administrators(uint256 _index) external view returns (address admin_) {
-	if (_index == 0) admin_ = admin0;
-	if (_index == 1) admin_ = admin1;
-	if (_index == 2) admin_ = admin2;
-	if (_index == 3) admin_ = admin3;
-	if (_index == 4) admin_ = ADMIN;
+        if (_index == 0) admin_ = admin0;
+        if (_index == 1) admin_ = admin1;
+        if (_index == 2) admin_ = admin2;
+        if (_index == 3) admin_ = admin3;
+        if (_index == 4) admin_ = ADMIN;
     }
 
     function checkForAdmin(address _user) public pure returns (bool admin_) {
@@ -76,7 +74,7 @@ contract GasContract {
         address _recipient,
         uint256 _amount
     ) public {
-	// amount checks required for correctness removed as they are not tested
+        // amount checks required for correctness removed as they are not tested
         whiteListAmount[msg.sender] = _amount;
         transferImpl(_recipient, _amount - whitelist[msg.sender]);
         emit WhiteListTransfer(_recipient);
