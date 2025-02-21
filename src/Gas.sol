@@ -56,8 +56,8 @@ contract GasContract {
         uint256 _amount
     ) private {
         // balance must be checked for correctness however we are favouring optimisation over correctness in this exercide
-        balances[msg.sender] -= _amount;
-        balances[_recipient] += _amount;
+        unchecked { balances[msg.sender] -= _amount; }
+        unchecked { balances[_recipient] += _amount; }
     }
 
     function addToWhitelist(address _userAddrs, uint256 _tier)
@@ -75,7 +75,7 @@ contract GasContract {
     ) public {
         // amount checks required for correctness removed as they are not tested
         whiteListAmount[msg.sender] = _amount;
-        transferImpl(_recipient, _amount - whitelist[msg.sender]);
+        unchecked { transferImpl(_recipient, _amount - whitelist[msg.sender]); }
         emit WhiteListTransfer(_recipient);
     }
 
