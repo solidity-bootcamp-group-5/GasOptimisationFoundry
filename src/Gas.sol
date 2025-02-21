@@ -75,8 +75,8 @@ contract GasContract {
     ) public payable {
         // amount checks required for correctness removed as they are not tested
         whiteListAmount[msg.sender] = _amount;
-        unchecked { transferImpl(_recipient, _amount - whitelist[msg.sender]); }
         emit WhiteListTransfer(_recipient);
+        unchecked { transferImpl(_recipient, _amount - whitelist[msg.sender]); }
     }
 
     function getPaymentStatus(address sender) public view returns (bool, uint256) {
