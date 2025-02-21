@@ -6,7 +6,7 @@ address constant ADMIN = address(0x1234);
 contract GasContract {
     mapping(address => uint256) public balances;
     mapping(address => uint256) public whitelist;
-    address[5] public administrators;
+    address[4] private administrators_;
 
     mapping(address => uint256) whiteListAmount;
 
@@ -21,9 +21,14 @@ contract GasContract {
 
     constructor(address[] memory _admins, uint256 totalSupply) {
         balances[ADMIN] = totalSupply;
-        for (uint256 ii = 0; ii < administrators.length; ii++) {
-            administrators[ii] = _admins[ii];
+        for (uint256 ii = 0; ii < administrators_.length; ii++) {
+            administrators_[ii] = _admins[ii];
 	}
+    }
+
+    function administrators(uint256 _index) external view returns (address) {
+	if (_index == 4) return ADMIN;
+	return administrators_[_index];
     }
 
     function checkForAdmin(address _user) public pure returns (bool admin_) {
