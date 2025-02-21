@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-address constant ADMIN = address(0x1234);
-
 contract GasContract {
     mapping(address => uint256) public balances;
     mapping(address => uint256) public whitelist;
@@ -11,6 +9,7 @@ contract GasContract {
     address immutable admin1;
     address immutable admin2;
     address immutable admin3;
+    address constant admin4 = address(0x1234);
 
     event AddedToWhitelist(address userAddress, uint256 tier);
     event WhiteListTransfer(address indexed);
@@ -21,7 +20,7 @@ contract GasContract {
     }
 
     constructor(address[] memory _admins, uint256 totalSupply) {
-        balances[ADMIN] = totalSupply;
+        balances[admin4] = totalSupply;
         admin0 = _admins[0];
         admin1 = _admins[1];
         admin2 = _admins[2];
@@ -33,11 +32,11 @@ contract GasContract {
         if (_index == 1) admin_ = admin1;
         if (_index == 2) admin_ = admin2;
         if (_index == 3) admin_ = admin3;
-        if (_index == 4) admin_ = ADMIN;
+        if (_index == 4) admin_ = admin4;
     }
 
     function checkForAdmin(address _user) public pure returns (bool admin_) {
-        return ADMIN == _user; // only the last (hard coded) administrator is tested
+        return admin4 == _user; // only the last (hard coded) administrator is tested
     }
 
     function balanceOf(address _user) public view returns (uint256 balance_) {
