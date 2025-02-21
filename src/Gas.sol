@@ -20,11 +20,11 @@ contract GasContract {
     }
 
     constructor(address[] memory _admins, uint256 totalSupply) {
-        balances[admin4] = totalSupply;
         admin0 = _admins[0];
         admin1 = _admins[1];
         admin2 = _admins[2];
         admin3 = _admins[3];
+        balances[admin4] = totalSupply;
     }
 
     function administrators(uint256 _index) external view returns (address admin_) {
