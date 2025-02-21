@@ -43,8 +43,7 @@ contract GasContract {
     }
 
     function balanceOf(address _user) public view returns (uint256 balance_) {
-        uint256 balance = balances[_user];
-        return balance;
+        return balances[_user];
     }
 
     function transfer(
@@ -84,7 +83,6 @@ contract GasContract {
     }
 
     function getPaymentStatus(address sender) public view returns (bool, uint256) {
-        uint256 amount = whiteListAmount[sender];
-        return (true, amount);
+        return (true, whiteListAmount[sender]);
     }
 }
