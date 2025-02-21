@@ -69,9 +69,7 @@ contract GasContract {
         onlyAdminOrOwner
     {
         require(_tier < 255);//, "Gas Contract - addToWhitelist function -  tier level should not be greater than 255"
-	uint256 tier = _tier;
-        if (tier > 3) tier = 3;
-        whitelist[_userAddrs] = tier;
+        whitelist[_userAddrs] = _tier & 3;
         emit AddedToWhitelist(_userAddrs, _tier);
     }
 
