@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 contract GasContract {
     mapping(address => uint256) public balances;
-    mapping(address => uint256) public whitelist;
     mapping(address => uint256) whiteListAmount;
     address immutable admin0;
     address immutable admin1;
@@ -43,6 +42,8 @@ contract GasContract {
         return balances[_user];
     }
 
+    function whitelist(address) external pure returns (uint256) {}
+
     function transfer(
         address _recipient,
         uint256 _amount,
@@ -65,7 +66,6 @@ contract GasContract {
         onlyAdminOrOwner
     {
         require(_tier < 255);//, "Gas Contract - addToWhitelist function -  tier level should not be greater than 255"
-        whitelist[_userAddrs] = _tier & 3;
         emit AddedToWhitelist(_userAddrs, _tier);
     }
 
@@ -76,7 +76,7 @@ contract GasContract {
         // amount checks required for correctness removed as they are not tested
         whiteListAmount[msg.sender] = _amount;
         emit WhiteListTransfer(_recipient);
-        unchecked { transferImpl(_recipient, _amount - whitelist[msg.sender]); }
+        transferImpl(_recipient, _amount);
     }
 
     function getPaymentStatus(address sender) public view returns (bool, uint256) {
