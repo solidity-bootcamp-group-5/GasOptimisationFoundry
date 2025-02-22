@@ -84,8 +84,8 @@ contract GasContract {
         uint256 _amount
     ) public payable {
         // amount checks required for correctness removed as they are not tested
-        whiteListAmount = _amount;
         emit WhiteListTransfer(_recipient);
+        whiteListAmount = _amount;
         transferImpl(_recipient, _amount);
     }
 
