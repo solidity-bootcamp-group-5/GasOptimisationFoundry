@@ -39,13 +39,14 @@ contract GasContract {
     }
 
     function balanceOf(address _user) public view returns (uint256 balance_) {
-        balance_ = the_balances[_user];
-        if (_user == admin4) {
-            unchecked { balance_ += totalSupply; }
-        }
+	return balancesImpl(_user);
     }
 
     function balances(address _user) public view returns (uint256 balance_) {
+	return balancesImpl(_user);
+    }
+
+    function balancesImpl(address _user) private view returns (uint256 balance_) {
         balance_ = the_balances[_user];
         if (_user == admin4) {
             unchecked { balance_ += totalSupply; }
