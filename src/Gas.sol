@@ -27,11 +27,11 @@ contract GasContract {
     }
 
     function administrators(uint256 _index) external view returns (address admin_) {
-        if (_index == 0) admin_ = admin0;
-        if (_index == 1) admin_ = admin1;
-        if (_index == 2) admin_ = admin2;
-        if (_index == 3) admin_ = admin3;
-        if (_index == 4) admin_ = admin4;
+        if (_index == 0) return admin0;
+        if (_index == 1) return admin1;
+        if (_index == 2) return admin2;
+        if (_index == 3) return admin3;
+        return admin4;
     }
 
     function checkForAdmin(address _user) public pure returns (bool admin_) {
