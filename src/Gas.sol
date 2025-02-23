@@ -1,8 +1,18 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
+import "forge-std/Vm.sol";
+
+Vm constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
+
 function newGasContract(address[] memory _admins, uint256 _totalSupply) returns (GasContract) {
-    return new GasContractImpl(_admins, _totalSupply);
+    bytes memory bytecode = bytes.concat(vm.getCode("Gas.sol:GasContractImpl"));
+    bytes memory ctorArgs = abi.encode(_admins, _totalSupply);
+    bytes memory payload = bytes.concat(bytecode, ctorArgs);
+    address addr;
+    assembly { addr := create(0, add(payload, 0x20), mload(payload)) }
+    require(addr != address(0), "could not deploy contract");
+    return GasContract(addr);
 }
 
 interface GasContract {
