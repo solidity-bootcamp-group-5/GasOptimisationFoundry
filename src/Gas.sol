@@ -2,10 +2,24 @@
 pragma solidity ^0.8.0;
 
 function newGasContract(address[] memory _admins, uint256 _totalSupply) returns (GasContract) {
-    return new GasContract(_admins, _totalSupply);
+    return new GasContractImpl(_admins, _totalSupply);
 }
 
-contract GasContract {
+interface GasContract {
+    event AddedToWhitelist(address userAddress, uint256 tier);
+    event WhiteListTransfer(address indexed);
+    function administrators(uint256 _index) external view returns (address admin_);
+    function checkForAdmin(address _user) external pure returns (bool admin_);
+    function balanceOf(address _user) external view returns (uint256 balance_);
+    function balances(address _user) external view returns (uint256 balance_);
+    function whitelist(address) external pure returns (uint256);
+    function transfer(address _recipient, uint256 _amount, string calldata) external payable;
+    function addToWhitelist(address _userAddrs, uint256 _tier) external payable;
+    function whiteTransfer(address _recipient, uint256 _amount) external payable;
+    function getPaymentStatus(address) external view returns (bool, uint256);
+}
+
+contract GasContractImpl is GasContract {
     mapping(address => uint256) private the_balances;
     uint256 whiteListAmount;
     address immutable admin0;
@@ -14,9 +28,6 @@ contract GasContract {
     address immutable admin3;
     address constant admin4 = address(0x1234);
     uint256 constant totalSupply = 1000000000;
-
-    event AddedToWhitelist(address userAddress, uint256 tier);
-    event WhiteListTransfer(address indexed);
 
     modifier onlyAdminOrOwner() {
         if (!checkForAdmin(msg.sender)) revert();
