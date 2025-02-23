@@ -178,7 +178,6 @@ object "GasContractYul" {
 					}
 					case 0x70a08231 { external_fun_balances() }
 					case 0x888b2284 {
-						if callvalue() { revert(0, 0) }
 						if slt(add(calldatasize(), not(3)), 32) { revert(0, 0) }
 						pop(abi_decode_address())
 						let _2 := sload(0x01)
@@ -190,7 +189,6 @@ object "GasContractYul" {
 						return(memPos, 64)
 					}
 					case 0x9b19251a {
-						if callvalue() { revert(0, 0) }
 						if slt(add(calldatasize(), not(3)), 32) { revert(0, 0) }
 						pop(abi_decode_address())
 						let memPos_1 := mload(64)
@@ -198,7 +196,6 @@ object "GasContractYul" {
 						return(memPos_1, 32)
 					}
 					case 0xb52d15e2 {
-						if callvalue() { revert(0, 0) }
 						if slt(add(calldatasize(), not(3)), 32) { revert(0, 0) }
 
 						let var_admin := eq(0x1234, and(abi_decode_address(), sub(shl(160, 1), 1)))
@@ -207,7 +204,6 @@ object "GasContractYul" {
 						return(memPos_2, 32)
 					}
 					case 0xd89d1510 {
-						if callvalue() { revert(0, 0) }
 						if slt(add(calldatasize(), not(3)), 32) { revert(0, 0) }
 						let ret := fun_administrators(calldataload(4))
 						let memPos_3 := mload(64)
@@ -236,7 +232,6 @@ object "GasContractYul" {
 			}
 			function external_fun_balances()
 			{
-				if callvalue() { revert(0, 0) }
 				if slt(add(calldatasize(), not(3)), 32)
 				{
 					revert(0, 0)
