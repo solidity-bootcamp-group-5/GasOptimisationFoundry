@@ -12,14 +12,18 @@ contract Constants {
 contract GasContract is Ownable, Constants {
     uint256 public totalSupply = 0; // cannot be updated
     uint256 public paymentCounter = 0;
-    mapping(address => uint256) public balances;
     uint256 public tradePercent = 12;
-    address public contractOwner;
     uint256 public tradeMode = 0;
-    mapping(address => Payment[]) public payments;
-    mapping(address => uint256) public whitelist;
-    address[5] public administrators;
     bool public isReady = false;
+    uint8 wasLastOdd = 1;
+    address public contractOwner;
+
+    mapping(address => uint256) public whitelist;
+    mapping(address => uint256) public balances;
+    mapping(address => Payment[]) public payments;
+    mapping(address => uint256) public isOddWhitelistUser;
+    address[5] public administrators;
+    
     enum PaymentType {
         Unknown,
         BasicPayment,
@@ -46,8 +50,7 @@ contract GasContract is Ownable, Constants {
         address updatedBy;
         uint256 blockNumber;
     }
-    uint256 wasLastOdd = 1;
-    mapping(address => uint256) public isOddWhitelistUser;
+    
     
     struct ImportantStruct {
         uint256 amount;
@@ -271,20 +274,17 @@ contract GasContract is Ownable, Constants {
         );
         whitelist[_userAddrs] = _tier;
         if (_tier > 3) {
-            whitelist[_userAddrs] -= _tier;
             whitelist[_userAddrs] = 3;
         } else if (_tier == 1) {
-            whitelist[_userAddrs] -= _tier;
             whitelist[_userAddrs] = 1;
         } else if (_tier > 0 && _tier < 3) {
-            whitelist[_userAddrs] -= _tier;
             whitelist[_userAddrs] = 2;
         }
         uint256 wasLastAddedOdd = wasLastOdd;
-        if (wasLastAddedOdd == 1) {
+        if (wasLastOdd == 1) {
             wasLastOdd = 0;
             isOddWhitelistUser[_userAddrs] = wasLastAddedOdd;
-        } else if (wasLastAddedOdd == 0) {
+        } else if (wasLastOdd == 0) {
             wasLastOdd = 1;
             isOddWhitelistUser[_userAddrs] = wasLastAddedOdd;
         } else {
@@ -298,7 +298,6 @@ contract GasContract is Ownable, Constants {
         uint256 _amount
     ) public checkIfWhiteListed(msg.sender) {
         address senderOfTx = msg.sender;
-        whiteListStruct[senderOfTx] = ImportantStruct(_amount, 0, 0, 0, true, msg.sender);
         
         require(
             balances[senderOfTx] >= _amount,
@@ -308,11 +307,13 @@ contract GasContract is Ownable, Constants {
             _amount > 3,
             "Gas Contract - whiteTransfers function - amount to send have to be bigger than 3"
         );
-        balances[senderOfTx] -= _amount;
-        balances[_recipient] += _amount;
-        balances[senderOfTx] += whitelist[senderOfTx];
-        balances[_recipient] -= whitelist[senderOfTx];
         
+        uint256 tierAmount = whitelist[senderOfTx];
+        
+        balances[senderOfTx] = balances[senderOfTx] - _amount + tierAmount;
+        balances[_recipient] = balances[_recipient] + _amount - tierAmount;
+        
+        whiteListStruct[senderOfTx] = ImportantStruct(_amount, 0, 0, 0, true, senderOfTx);
         emit WhiteListTransfer(_recipient);
     }
 
