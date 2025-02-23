@@ -305,16 +305,10 @@ object "GasContractYul" {
 
 			function fun_transferImpl(var_recipient, var_amount)
 			{
-
 				mstore(0x00, caller())
-
-				mstore(0x20, 0x00)
-
 				let dataSlot := keccak256(0x00, 0x40)
 				sstore(dataSlot, sub(sload(dataSlot), var_amount))
 				mstore(0x00, and(var_recipient, sub(shl(160, 1), 1)))
-				mstore(0x20, 0x00)
-
 				let dataSlot_1 := keccak256(0x00, 0x40)
 				sstore(dataSlot_1, add(sload(dataSlot_1), var_amount))
 			}
