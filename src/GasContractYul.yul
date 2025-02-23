@@ -1,10 +1,10 @@
 /// @use-src 23:"src/Gas.sol"
-object "GasContractImpl_39435" {
+object "GasContractYul" {
     code {
         {
             /// @src 23:1514:4351  "contract GasContractImpl is GasContract {..."
             mstore(64, memoryguard(0x0100))
-            let programSize := datasize("GasContractImpl_39435")
+            let programSize := datasize("GasContractYul")
             let argSize := sub(codesize(), programSize)
             let memoryDataOffset := allocate_memory(argSize)
             codecopy(memoryDataOffset, programSize, argSize)
@@ -106,8 +106,8 @@ object "GasContractImpl_39435" {
             /// @src 23:2112:2131  "admin3 = _admins[3]"
             mstore(224, /** @src 23:1514:4351  "contract GasContractImpl is GasContract {..." */ and(mload(addr_3), sub(shl(160, 1), 1)))
             let _4 := mload(64)
-            let _5 := datasize("GasContractImpl_39435_deployed")
-            codecopy(_4, dataoffset("GasContractImpl_39435_deployed"), _5)
+            let _5 := datasize("GasContractYul_deployed")
+            codecopy(_4, dataoffset("GasContractYul_deployed"), _5)
             setimmutable(_4, "39177", mload(/** @src 23:2025:2044  "admin0 = _admins[0]" */ 128))
             /// @src 23:1514:4351  "contract GasContractImpl is GasContract {..."
             setimmutable(_4, "39179", mload(/** @src 23:2054:2073  "admin1 = _admins[1]" */ 160))
@@ -132,7 +132,7 @@ object "GasContractImpl_39435" {
         }
     }
     /// @use-src 23:"src/Gas.sol"
-    object "GasContractImpl_39435_deployed" {
+    object "GasContractYul_deployed" {
         code {
             {
                 /// @src 23:1514:4351  "contract GasContractImpl is GasContract {..."
