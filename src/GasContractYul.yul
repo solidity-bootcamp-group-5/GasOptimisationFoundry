@@ -2,37 +2,17 @@
 object "GasContractYul" {
 	code {
 		{
-
 			mstore(64, memoryguard(0x0100))
 			let programSize := datasize("GasContractYul")
 			let argSize := sub(codesize(), programSize)
 			let memoryDataOffset := allocate_memory(argSize)
 			codecopy(memoryDataOffset, programSize, argSize)
-			let _1 := add(memoryDataOffset, argSize)
-			if slt(sub(_1, memoryDataOffset), 64)
-			{
-				revert(0, 0)
-			}
 
 			let offset := mload(memoryDataOffset)
-			if gt(offset, sub(shl(64, 1), 1))
-			{
-				revert(0, 0)
-			}
 
 			let _2 := add(memoryDataOffset, offset)
-			if iszero(slt(add(_2, 0x1f), _1))
-			{
-				revert(0, 0)
-			}
 
 			let length := mload(_2)
-			if gt(length, sub(shl(64, 1), 1))
-			{
-				mstore(0, shl(224, 0x4e487b71))
-				mstore(4, 0x41)
-				revert(0, 0x24)
-			}
 			let _3 := shl(5, length)
 			let dst := allocate_memory(add(_3, 0x20))
 			let array := dst
@@ -40,80 +20,36 @@ object "GasContractYul" {
 			dst := add(dst, 0x20)
 			let dst_1 := dst
 			let srcEnd := add(add(_2, _3), 0x20)
-			if gt(srcEnd, _1)
-			{
-				revert(0, 0)
-			}
 
 			let src := add(_2, 0x20)
 			for { } lt(src, srcEnd) { src := add(src, 0x20) }
 			{
 				let value := mload(src)
-				if iszero(eq(value, and(value, sub(shl(160, 1), 1))))
-				{
-					revert(0, 0)
-				}
-
 				mstore(dst, value)
 				dst := add(dst, 0x20)
 			}
 
 			let addr := 0
-
-			if iszero(mload(array))
-			{
-				mstore(0, shl(224, 0x4e487b71))
-				mstore(4, 0x32)
-				revert(0, 0x24)
-			}
 			addr := dst_1
-
 			mstore(128, and(mload(dst_1), sub(shl(160, 1), 1)))
 
 			let addr_1 := 0
-
-			if iszero(lt(0x01, mload(array)))
-			{
-				mstore(0, shl(224, 0x4e487b71))
-				mstore(4, 0x32)
-				revert(0, 0x24)
-			}
 			addr_1 := add(array, 64)
-
 			mstore(160, and(mload(addr_1), sub(shl(160, 1), 1)))
 
 			let addr_2 := 0
-
-			if iszero(lt(0x02, mload(array)))
-			{
-				mstore(0, shl(224, 0x4e487b71))
-				mstore(4, 0x32)
-				revert(0, 0x24)
-			}
 			addr_2 := add(array, 96)
-
 			mstore(192, and(mload(addr_2), sub(shl(160, 1), 1)))
 
 			let addr_3 := 0
-
-			if iszero(lt(0x03, mload(array)))
-			{
-				mstore(0, shl(224, 0x4e487b71))
-				mstore(4, 0x32)
-				revert(0, 0x24)
-			}
 			addr_3 := add(array, 128)
-
 			mstore(224, and(mload(addr_3), sub(shl(160, 1), 1)))
 			let _4 := mload(64)
 			let _5 := datasize("GasContractYul_deployed")
 			codecopy(_4, dataoffset("GasContractYul_deployed"), _5)
 			setimmutable(_4, "39177", mload(128))
-
 			setimmutable(_4, "39179", mload(160))
-
 			setimmutable(_4, "39181", mload(192))
-
 			setimmutable(_4, "39183", mload(224))
 
 			return(_4, _5)
