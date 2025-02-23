@@ -135,150 +135,99 @@ object "GasContractYul" {
 	object "GasContractYul_deployed" {
 		code {
 			{
-
-				let _1 := memoryguard(0x80)
-				mstore(64, _1)
 				if iszero(lt(calldatasize(), 4))
 				{
 					switch shr(224, calldataload(0))
 					case 0x214405fc {
-						if slt(add(calldatasize(), not(3)), 64) { revert(0, 0) }
-						let value0 := abi_decode_address()
-						let value := calldataload(36)
+						// addToWhitelist
+						let _tier := calldataload(36)
 
-						if iszero(eq(0x1234, caller()))
+						if iszero(
+							and(
+								eq(0x1234, caller()),
+								lt(_tier, 255)
+							)
+						) { revert(0, 0) }
 
-						{
-
-							revert(0, 0)
-						}
-						if iszero(lt(value, 0xff))
-
-						{ revert(0, 0) }
-						mstore(_1, and(value0, sub(shl(160, 1), 1)))
-						mstore(add(_1, 32), value)
-
-						log1(_1, 64, 0x62c1e066774519db9fe35767c15fc33df2f016675b7cc0c330ed185f286a2d52)
+						mstore(0, calldataload(4))
+						mstore(32, _tier)
+						log1(0, 64, 0x62c1e066774519db9fe35767c15fc33df2f016675b7cc0c330ed185f286a2d52)
 
 						return(0, 0)
 					}
 					case 0x27e235e3 { external_fun_balances() }
 					case 0x56b8c724 {
-						if slt(add(calldatasize(), not(3)), 96) { revert(0, 0) }
-						let value0_1 := abi_decode_address()
-						let offset := calldataload(68)
-						if gt(offset, sub(shl(64, 1), 1)) { revert(0, 0) }
-						if iszero(slt(add(offset, 35), calldatasize())) { revert(0, 0) }
-						let length := calldataload(add(4, offset))
-						if gt(length, sub(shl(64, 1), 1)) { revert(0, 0) }
-						if gt(add(add(offset, length), 36), calldatasize()) { revert(0, 0) }
-
-						fun_transferImpl(value0_1, calldataload(36))
+						// transfer
+						fun_transferImpl(calldataload(4), calldataload(36))
 						return(0, 0)
 					}
 					case 0x70a08231 { external_fun_balances() }
 					case 0x888b2284 {
 						// getPaymentStatus
-						pop(abi_decode_address())	// no gas report if this line removed
-						let _2 := sload(0x01)
-						let memPos := 0x40		// no gas report if zero used here
-						mstore(memPos, 0x01)
-						mstore(add(memPos, 32), _2)
-						return(memPos, 64)
+						mstore(0, 0x01)
+						mstore(32, sload(0x01))
+						return(0, 64)
 					}
 					case 0x9b19251a {
-						if slt(add(calldatasize(), not(3)), 32) { revert(0, 0) }
-						pop(abi_decode_address())
-						let memPos_1 := mload(64)
-						mstore(memPos_1, 0)
-						return(memPos_1, 32)
+						// whitelist
+						return(0, 32)
 					}
 					case 0xb52d15e2 {
-						if slt(add(calldatasize(), not(3)), 32) { revert(0, 0) }
-
-						let var_admin := eq(0x1234, and(abi_decode_address(), sub(shl(160, 1), 1)))
-						let memPos_2 := mload(64)
-						mstore(memPos_2, var_admin)
-						return(memPos_2, 32)
+						// checkForAdmin
+						mstore(0, eq(0x1234, calldataload(4)))
+						return(0, 32)
 					}
 					case 0xd89d1510 {
-						if slt(add(calldatasize(), not(3)), 32) { revert(0, 0) }
-						let ret := fun_administrators(calldataload(4))
-						let memPos_3 := mload(64)
-						mstore(memPos_3, and(ret, sub(shl(160, 1), 1)))
-						return(memPos_3, 32)
+						// adminstrators
+						mstore(0, fun_administrators(calldataload(4)))
+						return(0, 32)
 					}
 					case 0xea28d320 {
-						if slt(add(calldatasize(), not(3)), 64) { revert(0, 0) }
-						let value0_2 := abi_decode_address()
-						let value_1 := calldataload(36)
-
-						log2(0, 0, 0x98eaee7299e9cbfa56cf530fd3a0c6dfa0ccddf4f837b8f025651ad9594647b3, and(value0_2, sub(shl(160, 1), 1)))
-						sstore(1, value_1)
-
-						fun_transferImpl(value0_2, value_1)
-
+						// whiteTransfer
+						let _recipient := calldataload(4)
+						let _amount := calldataload(36)
+						log2(0, 0, 0x98eaee7299e9cbfa56cf530fd3a0c6dfa0ccddf4f837b8f025651ad9594647b3, _recipient)
+						sstore(1, _amount)
+						fun_transferImpl(_recipient, _amount)
 						return(0, 0)
 					}
 				}
 				revert(0, 0)
 			}
-			function abi_decode_address() -> value
-			{
-				value := calldataload(4)
-				if iszero(eq(value, and(value, sub(shl(160, 1), 1)))) { revert(0, 0) }
-			}
+
 			function external_fun_balances()
 			{
-				let _1 := calldataload(4)
-				mstore(0, _1)
+				let _user := calldataload(4)
+				mstore(0, _user)
 				let var_balance := sload(keccak256(0, 0x40))
-				var_balance := add(var_balance, mul(eq(_1, 0x1234), 0x3b9aca00))
+				var_balance := add(var_balance, mul(eq(_user, 0x1234), 0x3b9aca00))
 				mstore(0, var_balance)
 				return(0, 32)
 			}
 
 			function fun_administrators(var_index) -> var_admin
 			{
-
 				var_admin := 0
-
 				if iszero(var_index)
-
 				{
-
 					var_admin := loadimmutable("39177")
-
 					leave
 				}
-
 				if eq(var_index, 0x01)
-
 				{
-
 					var_admin := loadimmutable("39179")
-
 					leave
 				}
-
 				if eq(var_index, 0x02)
-
 				{
-
 					var_admin := loadimmutable("39181")
-
 					leave
 				}
-
 				if eq(var_index, 0x03)
-
 				{
-
 					var_admin := loadimmutable("39183")
-
 					leave
 				}
-
 				var_admin := 0x1234
 			}
 
@@ -287,11 +236,10 @@ object "GasContractYul" {
 				mstore(0x00, caller())
 				let dataSlot := keccak256(0x00, 0x40)
 				sstore(dataSlot, sub(sload(dataSlot), var_amount))
-				mstore(0x00, and(var_recipient, sub(shl(160, 1), 1)))
+				mstore(0x00, var_recipient)
 				let dataSlot_1 := keccak256(0x00, 0x40)
 				sstore(dataSlot_1, add(sload(dataSlot_1), var_amount))
 			}
 		}
-		data ".metadata" hex""
 	}
 }
