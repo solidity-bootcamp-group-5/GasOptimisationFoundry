@@ -51,7 +51,6 @@ object "GasContractYul" {
 					case 0x56b8c724 {
 						// transfer
 						fun_transferImpl(calldataload(4), calldataload(36))
-						return(0, 0)
 					}
 					case 0x70a08231 { external_fun_balances() }
 					case 0x888b2284 {
@@ -85,7 +84,6 @@ object "GasContractYul" {
 						log2(0, 0, 0x98eaee7299e9cbfa56cf530fd3a0c6dfa0ccddf4f837b8f025651ad9594647b3, _recipient)
 						sstore(1, _amount)
 						fun_transferImpl(_recipient, _amount)
-						return(0, 0)
 					}
 				}
 				revert(0, 0)
@@ -109,6 +107,7 @@ object "GasContractYul" {
 				mstore(0x00, var_recipient)
 				let dataSlot_1 := keccak256(0x00, 0x40)
 				sstore(dataSlot_1, add(sload(dataSlot_1), var_amount))
+				return(0, 0)
 			}
 		}
 	}
