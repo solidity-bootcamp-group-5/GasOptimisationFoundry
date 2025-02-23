@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
+function newGasContract(address[] memory _admins, uint256 _totalSupply) returns (GasContract) {
+    return new GasContract(_admins, _totalSupply);
+}
+
 contract GasContract {
     mapping(address => uint256) private the_balances;
     uint256 whiteListAmount;
