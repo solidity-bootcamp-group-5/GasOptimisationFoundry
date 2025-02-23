@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "forge-std/Vm.sol";
+import {console} from "forge-std/console.sol";
 
 Vm constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
@@ -13,7 +14,17 @@ function newGasContract(address[] memory _admins, uint256 _totalSupply) returns 
     bytes memory ctorArgs = abi.encode(_admins, _totalSupply);
     bytes memory payload = bytes.concat(bytecode, ctorArgs);
     address addr;
-    assembly { addr := create(0, add(payload, 0x20), mload(payload)) }
+    uint256 gas_used;
+    assembly {
+	let offset := add(payload, 0x20)
+	let length := mload(payload)
+	let gas_before := gas()
+	let ret := create(0, offset, length)
+	let gas_after := gas()
+	gas_used := sub(gas_before, gas_after)
+	addr := ret
+    }
+    console._sendLogPayload(abi.encodeWithSignature("log(string,uint256,uint256)", "CREATE gas used & payload size:", gas_used, payload.length));
     require(addr != address(0), "could not deploy contract");
     return GasContract(addr);
 }
