@@ -178,13 +178,11 @@ object "GasContractYul" {
 					}
 					case 0x70a08231 { external_fun_balances() }
 					case 0x888b2284 {
-						if slt(add(calldatasize(), not(3)), 32) { revert(0, 0) }
-						pop(abi_decode_address())
+						// getPaymentStatus
+						pop(abi_decode_address())	// no gas report if this line removed
 						let _2 := sload(0x01)
-
-						let memPos := mload(64)
+						let memPos := 0x40		// no gas report if zero used here
 						mstore(memPos, 0x01)
-
 						mstore(add(memPos, 32), _2)
 						return(memPos, 64)
 					}
