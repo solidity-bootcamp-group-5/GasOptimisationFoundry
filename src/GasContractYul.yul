@@ -6,11 +6,21 @@ object "GasContractYul" {
 			// [64, B, A.length, A[0], A[1], A[2], A[3], ...]
 			let _offset := dataoffset("GasContractYul_deployed")
 			let _size := datasize("GasContractYul_deployed")
-			let _admins := add(add(_offset, _size), 96)
-			let _total := add(_size, 128)
+			let _args := add(_offset, _size)
 			codecopy(0, _offset, _size)
-			codecopy(_size, _admins, 128)
-			return(0, _total)
+			_args := add(_args, 108)
+			codecopy(_size, _args, 20)
+			_size := add(_size, 20)
+			_args := add(_args, 32)
+			codecopy(_size, _args, 20)
+			_size := add(_size, 20)
+			_args := add(_args, 32)
+			codecopy(_size, _args, 20)
+			_size := add(_size, 20)
+			_args := add(_args, 32)
+			codecopy(_size, _args, 20)
+			_size := add(_size, 20)
+			return(0, _size)
 		}
 	}
 
@@ -62,8 +72,8 @@ object "GasContractYul" {
 					case 0xd89d1510 {
 						// adminstrators
 						let _index := calldataload(4)
-						let _offset := add(datasize("GasContractYul_deployed"), shl(5, _index))
-						codecopy(0, _offset, 32)
+						let _offset := add(datasize("GasContractYul_deployed"), mul(20, _index))
+						codecopy(12, _offset, 20)
 						mstore(32, 0x1234)
 						let _return := shl(5, eq(_index, 4))
 						return(_return, 32)
