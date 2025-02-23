@@ -232,31 +232,12 @@ object "GasContractYul" {
 			}
 			function external_fun_balances()
 			{
-				if slt(add(calldatasize(), not(3)), 32)
-				{
-					revert(0, 0)
-				}
-
-				let value0 := abi_decode_address()
-
-				let var_balance := 0
-
-				let _1 := and(value0, sub(shl(160, 1), 1))
+				let _1 := calldataload(4)
 				mstore(0, _1)
-				mstore(32, 0)
-
-				var_balance := sload(keccak256(0, 0x40))
-
-				if eq(_1, 0x1234)
-
-				{
-
-					var_balance := add(var_balance, 0x3b9aca00)
-				}
-
-				let memPos := mload(0x40)
-				mstore(memPos, var_balance)
-				return(memPos, 32)
+				let var_balance := sload(keccak256(0, 0x40))
+				var_balance := add(var_balance, mul(eq(_1, 0x1234), 0x3b9aca00))
+				mstore(0, var_balance)
+				return(0, 32)
 			}
 
 			function fun_administrators(var_index) -> var_admin
