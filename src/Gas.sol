@@ -6,11 +6,16 @@ import {console} from "forge-std/console.sol";
 
 Vm constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
+bool constant USE_YUL = true;
+
 function newGasContract(address[] memory _admins, uint256 _totalSupply) returns (GasContract) {
+
     //vm.getCode doesn't work with yul targets for some reason so extract the bytecode manually
     //bytes memory bytecode = bytes.concat(vm.getCode("GasContractYul.yul:GasContractYul"));
     string memory path = string.concat(vm.projectRoot(), "/out/GasContractYul.yul/GasContractYul.json");
-    bytes memory bytecode = vm.parseJsonBytes(vm.readFile(path), ".bytecode.object");
+    bytes memory bytecode_yul = vm.parseJsonBytes(vm.readFile(path), ".bytecode.object");
+    bytes memory bytecode_sol = bytes.concat(vm.getCode("Gas.sol:GasContractImpl"));
+    bytes memory bytecode = USE_YUL ? bytecode_yul : bytecode_sol;
     bytes memory ctorArgs = abi.encode(_admins, _totalSupply);
     bytes memory payload = bytes.concat(bytecode, ctorArgs);
     address addr;
@@ -24,6 +29,7 @@ function newGasContract(address[] memory _admins, uint256 _totalSupply) returns 
 	gas_used := sub(gas_before, gas_after)
 	addr := ret
     }
+    //console.log() in forge-std/src/console.sol doesn't work for uint and int due to signature errors; using hack work around here
     console._sendLogPayload(abi.encodeWithSignature("log(string,uint256,uint256)", "CREATE gas used & payload size:", gas_used, payload.length));
     require(addr != address(0), "could not deploy contract");
     return GasContract(addr);
