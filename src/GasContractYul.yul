@@ -2,69 +2,15 @@
 object "GasContractYul" {
 	code {
 		{
-			mstore(64, memoryguard(0x0100))
-			let programSize := datasize("GasContractYul")
-			let argSize := sub(codesize(), programSize)
-			let memoryDataOffset := allocate_memory(argSize)
-			codecopy(memoryDataOffset, programSize, argSize)
-
-			let offset := mload(memoryDataOffset)
-
-			let _2 := add(memoryDataOffset, offset)
-
-			let length := mload(_2)
-			let _3 := shl(5, length)
-			let dst := allocate_memory(add(_3, 0x20))
-			let array := dst
-			mstore(dst, length)
-			dst := add(dst, 0x20)
-			let dst_1 := dst
-			let srcEnd := add(add(_2, _3), 0x20)
-
-			let src := add(_2, 0x20)
-			for { } lt(src, srcEnd) { src := add(src, 0x20) }
-			{
-				let value := mload(src)
-				mstore(dst, value)
-				dst := add(dst, 0x20)
-			}
-
-			let addr := 0
-			addr := dst_1
-			mstore(128, and(mload(dst_1), sub(shl(160, 1), 1)))
-
-			let addr_1 := 0
-			addr_1 := add(array, 64)
-			mstore(160, and(mload(addr_1), sub(shl(160, 1), 1)))
-
-			let addr_2 := 0
-			addr_2 := add(array, 96)
-			mstore(192, and(mload(addr_2), sub(shl(160, 1), 1)))
-
-			let addr_3 := 0
-			addr_3 := add(array, 128)
-			mstore(224, and(mload(addr_3), sub(shl(160, 1), 1)))
-			let _4 := mload(64)
-			let _5 := datasize("GasContractYul_deployed")
-			codecopy(_4, dataoffset("GasContractYul_deployed"), _5)
-			setimmutable(_4, "39177", mload(128))
-			setimmutable(_4, "39179", mload(160))
-			setimmutable(_4, "39181", mload(192))
-			setimmutable(_4, "39183", mload(224))
-
-			return(_4, _5)
-		}
-		function allocate_memory(size) -> memPtr
-		{
-			memPtr := mload(64)
-			let newFreePtr := add(memPtr, and(add(size, 31), not(31)))
-			if or(gt(newFreePtr, sub(shl(64, 1), 1)), lt(newFreePtr, memPtr))
-			{
-				mstore(0, shl(224, 0x4e487b71))
-				mstore(4, 0x41)
-				revert(0, 0x24)
-			}
-			mstore(64, newFreePtr)
+			// ctor args are (address[] A, uint256 B)
+			// [64, B, A.length, A[0], A[1], A[2], A[3], ...]
+			let _offset := dataoffset("GasContractYul_deployed")
+			let _size := datasize("GasContractYul_deployed")
+			let _admins := add(add(_offset, _size), 96)
+			let _total := add(_size, 128)
+			codecopy(0, _offset, _size)
+			codecopy(_size, _admins, 128)
+			return(0, _total)
 		}
 	}
 
@@ -115,8 +61,12 @@ object "GasContractYul" {
 					}
 					case 0xd89d1510 {
 						// adminstrators
-						mstore(0, fun_administrators(calldataload(4)))
-						return(0, 32)
+						let _index := calldataload(4)
+						let _offset := add(datasize("GasContractYul_deployed"), shl(5, _index))
+						codecopy(0, _offset, 32)
+						mstore(32, 0x1234)
+						let _return := shl(5, eq(_index, 4))
+						return(_return, 32)
 					}
 					case 0xea28d320 {
 						// whiteTransfer
@@ -139,32 +89,6 @@ object "GasContractYul" {
 				var_balance := add(var_balance, mul(eq(_user, 0x1234), 0x3b9aca00))
 				mstore(0, var_balance)
 				return(0, 32)
-			}
-
-			function fun_administrators(var_index) -> var_admin
-			{
-				var_admin := 0
-				if iszero(var_index)
-				{
-					var_admin := loadimmutable("39177")
-					leave
-				}
-				if eq(var_index, 0x01)
-				{
-					var_admin := loadimmutable("39179")
-					leave
-				}
-				if eq(var_index, 0x02)
-				{
-					var_admin := loadimmutable("39181")
-					leave
-				}
-				if eq(var_index, 0x03)
-				{
-					var_admin := loadimmutable("39183")
-					leave
-				}
-				var_admin := 0x1234
 			}
 
 			function fun_transferImpl(var_recipient, var_amount)
