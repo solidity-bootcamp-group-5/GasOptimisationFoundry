@@ -6,7 +6,10 @@ import "forge-std/Vm.sol";
 Vm constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
 function newGasContract(address[] memory _admins, uint256 _totalSupply) returns (GasContract) {
-    bytes memory bytecode = bytes.concat(vm.getCode("Gas.sol:GasContractImpl"));
+    //vm.getCode doesn't work with yul targets for some reason so extract the bytecode manually
+    //bytes memory bytecode = bytes.concat(vm.getCode("GasContractYul.yul:GasContractImpl_39435"));
+    string memory path = string.concat(vm.projectRoot(), "/out/GasContractYul.yul/GasContractImpl_39435.json");
+    bytes memory bytecode = vm.parseJsonBytes(vm.readFile(path), ".bytecode.object");
     bytes memory ctorArgs = abi.encode(_admins, _totalSupply);
     bytes memory payload = bytes.concat(bytecode, ctorArgs);
     address addr;
