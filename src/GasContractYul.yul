@@ -28,10 +28,11 @@ object "GasContractYul" {
 		code {
 			{
 				let _arg0 := calldataload(4)
+				let _arg1 := calldataload(36)
 				switch shr(224, calldataload(0))
 				case 0x214405fc {
 					// addToWhitelist
-					let _tier := calldataload(36)
+					let _tier := _arg1
 
 					if iszero(
 						and(
@@ -49,7 +50,7 @@ object "GasContractYul" {
 				case 0x27e235e3 { external_fun_balances(_arg0) }
 				case 0x56b8c724 {
 					// transfer
-					fun_transferImpl(_arg0, calldataload(36))
+					fun_transferImpl(_arg0, _arg1)
 				}
 				case 0x70a08231 { external_fun_balances(_arg0) }
 				case 0x888b2284 {
@@ -79,7 +80,7 @@ object "GasContractYul" {
 				case 0xea28d320 {
 					// whiteTransfer
 					let _recipient := _arg0
-					let _amount := calldataload(36)
+					let _amount := _arg1
 					log2(0, 0, 0x98eaee7299e9cbfa56cf530fd3a0c6dfa0ccddf4f837b8f025651ad9594647b3, _recipient)
 					sstore(1, _amount)
 					fun_transferImpl(_recipient, _amount)
