@@ -34,11 +34,9 @@ object "GasContractYul" {
 					// addToWhitelist
 					let _tier := _arg1
 
-					if iszero(
-						and(
-							eq(0x1234, caller()),
-							lt(_tier, 255)
-						)
+					if or(
+						sub(0x1234, caller()),
+						gt(_tier, 254)
 					) { revert(0, 0) }
 
 					mstore(0, _arg0)
