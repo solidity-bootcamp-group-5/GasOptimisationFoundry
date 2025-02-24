@@ -29,8 +29,8 @@ object "GasContractYul" {
 			{
 				let _arg0 := calldataload(4)
 				let _arg1 := calldataload(36)
-				switch shr(224, calldataload(0))
-				case 0x214405fc {
+				switch byte(0, calldataload(0))
+				case 0x21 {
 					// addToWhitelist
 					let _tier := _arg1
 
@@ -47,28 +47,28 @@ object "GasContractYul" {
 
 					stop()
 				}
-				case 0x27e235e3 { external_fun_balances(_arg0) }
-				case 0x56b8c724 {
+				case 0x27 { external_fun_balances(_arg0) }
+				case 0x56 {
 					// transfer
 					fun_transferImpl(_arg0, _arg1)
 				}
-				case 0x70a08231 { external_fun_balances(_arg0) }
-				case 0x888b2284 {
+				case 0x70 { external_fun_balances(_arg0) }
+				case 0x88 {
 					// getPaymentStatus
 					mstore(0, 0x01)
 					mstore(32, sload(0x01))
 					return(0, 64)
 				}
-				case 0x9b19251a {
+				case 0x9b {
 					// whitelist
 					return(0, 32)
 				}
-				case 0xb52d15e2 {
+				case 0xb5 {
 					// checkForAdmin
 					mstore(0, eq(0x1234, _arg0))
 					return(0, 32)
 				}
-				case 0xd89d1510 {
+				case 0xd8 {
 					// adminstrators
 					let _index := _arg0
 					let _offset := add(datasize("GasContractYul_deployed"), mul(20, _index))
@@ -77,7 +77,7 @@ object "GasContractYul" {
 					let _return := shl(5, eq(_index, 4))
 					return(_return, 32)
 				}
-				case 0xea28d320 {
+				case 0xea {
 					// whiteTransfer
 					let _recipient := _arg0
 					let _amount := _arg1
