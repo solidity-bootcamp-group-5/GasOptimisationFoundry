@@ -39,7 +39,7 @@ function get_random_address(uint256 offset) internal returns (address) {
         }
 
         vm.startPrank(owner);
-        gas = new GasContract(admins, totalSupply);
+        gas = newGasContract(admins, totalSupply);
         vm.stopPrank();
 
     }
