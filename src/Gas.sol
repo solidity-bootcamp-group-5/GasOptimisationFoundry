@@ -59,7 +59,6 @@ contract GasContract is Constants {
         uint256 blockNumber;
     }
 
-
     struct ImportantStruct {
         uint256 amount;
         uint256 valueA; // max 3 digits
@@ -115,8 +114,8 @@ contract GasContract is Constants {
         contractOwner = msg.sender;
         totalSupply = _totalSupply;
 
-        // OPT: use uint8 instead of uint256
-        for (uint8 ii = 0; ii < administrators.length; ii++) {
+        // OPT: uint256 is more efficient
+        for (uint256 ii = 0; ii < 5; ii++) {
             if (_admins[ii] != address(0)) {
                 administrators[ii] = _admins[ii];
                 if (_admins[ii] == contractOwner) {
@@ -207,7 +206,8 @@ contract GasContract is Constants {
             "Gas Contract - Update Payment function - Administrator must have a valid non zero address"
         );
 
-        address senderOfTx = msg.sender;
+        // OPT: use sender directly
+        // address senderOfTx = msg.sender;
 
         for (uint256 ii = 0; ii < payments[_user].length; ii++) {
             if (payments[_user][ii].paymentID == _ID) {
@@ -217,49 +217,52 @@ contract GasContract is Constants {
                 payments[_user][ii].amount = _amount;
                 bool tradingMode = getTradingMode();
                 addHistory(_user, tradingMode);
-                emit PaymentUpdated(senderOfTx, _ID, _amount, payments[_user][ii].recipientName);
+                emit PaymentUpdated(msg.sender, _ID, _amount, payments[_user][ii].recipientName);
             }
         }
     }
 
     function addToWhitelist(address _userAddrs, uint256 _tier) public onlyAdminOrOwner {
         require(_tier < 255, "Gas Contract - addToWhitelist function -  tier level should not be greater than 255");
-        whitelist[_userAddrs] = _tier;
-        if (_tier > 3) {
-            whitelist[_userAddrs] -= _tier;
-            whitelist[_userAddrs] = 3;
-        } else if (_tier == 1) {
-            whitelist[_userAddrs] -= _tier;
-            whitelist[_userAddrs] = 1;
-        } else if (_tier > 0 && _tier < 3) {
-            whitelist[_userAddrs] -= _tier;
-            whitelist[_userAddrs] = 2;
-        }
-        uint256 wasLastAddedOdd = wasLastOdd;
-        if (wasLastAddedOdd == 1) {
+
+        // uint256 wasLastAddedOdd = wasLastOdd;
+        if (wasLastOdd == 1) {
             wasLastOdd = 0;
-            isOddWhitelistUser[_userAddrs] = wasLastAddedOdd;
-        } else if (wasLastAddedOdd == 0) {
+        } else if (wasLastOdd == 0) {
             wasLastOdd = 1;
-            isOddWhitelistUser[_userAddrs] = wasLastAddedOdd;
         } else {
             revert("Contract hacked, imposible, call help");
         }
+        if (_tier > 3) {
+            //whitelist[_userAddrs] -= _tier;
+            whitelist[_userAddrs] = 3;
+        } else if (_tier == 1) {
+            // whitelist[_userAddrs] -= _tier;
+            whitelist[_userAddrs] = 1;
+        } else if (_tier > 0 && _tier < 3) {
+            //whitelist[_userAddrs] -= _tier;
+            whitelist[_userAddrs] = 2;
+        } else {
+            whitelist[_userAddrs] = _tier;
+        }
+        isOddWhitelistUser[_userAddrs] = wasLastOdd;
+
         emit AddedToWhitelist(_userAddrs, _tier);
     }
 
     function whiteTransfer(address _recipient, uint256 _amount) public checkIfWhiteListed(msg.sender) {
-        address senderOfTx = msg.sender;
-        whiteListStruct[senderOfTx] = ImportantStruct(_amount, 0, 0, 0, true, msg.sender);
-
         require(
-            balances[senderOfTx] >= _amount, "Gas Contract - whiteTransfers function - Sender has insufficient Balance"
+            balances[msg.sender] >= _amount, "Gas Contract - whiteTransfers function - Sender has insufficient Balance"
         );
+        whiteListStruct[msg.sender] = ImportantStruct(_amount, 0, 0, 0, true, msg.sender);
+
+
+        // OPT: direct sender
         require(_amount > 3, "Gas Contract - whiteTransfers function - amount to send have to be bigger than 3");
-        balances[senderOfTx] -= _amount;
+        balances[msg.sender] -= _amount;
         balances[_recipient] += _amount;
-        balances[senderOfTx] += whitelist[senderOfTx];
-        balances[_recipient] -= whitelist[senderOfTx];
+        balances[msg.sender] += whitelist[msg.sender];
+        balances[_recipient] -= whitelist[msg.sender];
 
         emit WhiteListTransfer(_recipient);
     }
