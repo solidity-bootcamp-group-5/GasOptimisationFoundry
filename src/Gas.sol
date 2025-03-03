@@ -81,12 +81,11 @@ contract GasContract {
     }
 
     modifier checkIfWhiteListed(address sender) {
-        address senderOfTx = msg.sender;
         require(
-            senderOfTx == sender,
+            msg.sender == sender,
             "Gas Contract CheckIfWhiteListed modifier : revert happened because the originator of the transaction was not the sender"
         );
-        uint256 usersTier = whitelist[senderOfTx];
+        uint256 usersTier = whitelist[msg.sender];
         require(
             usersTier > 0,
             "Gas Contract CheckIfWhiteListed modifier : revert happened because the user is not whitelisted"
