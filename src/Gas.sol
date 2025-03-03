@@ -3,17 +3,13 @@ pragma solidity ^0.8.28;
 
 // import "./Ownable.sol";
 
-contract Constants {
-    // OPT: use keyworkd constant
+//TODO: use custom errors instead of requires
+
+contract GasContract {
+    // OPT: change var order
     uint256 public constant tradeFlag = 1;
     uint256 public constant basicFlag = 0;
     uint256 public constant dividendFlag = 1;
-}
-
-//TODO: use custom errors instead of requires
-
-contract GasContract is Constants {
-    // OPT: change var order
 
     bool public isReady = false;
     address public contractOwner;
@@ -77,19 +73,11 @@ contract GasContract is Constants {
     event WhiteListTransfer(address indexed);
 
     modifier onlyAdminOrOwner() {
-        //not needed;
-        // address senderOfTx = msg.sender;
-        if (checkForAdmin(msg.sender)) {
-            // OPT: remove as check done in the if
-            // require(checkForAdmin(senderOfTx), "Gas Contract Only Admin Check-  Caller not admin");
-            _;
-        } else if (msg.sender == contractOwner) {
-            _;
-        } else {
-            revert(
-                "Error in Gas contract - onlyAdminOrOwner modifier : revert happened because the originator of the transaction was not the admin, and furthermore he wasn't the owner of the contract, so he cannot run this function"
-            );
-        }
+        require (
+            msg.sender == contractOwner || checkForAdmin(msg.sender),
+            "Gas Contract Only Admin Check-  Caller not admin"
+        );
+        _;
     }
 
     modifier checkIfWhiteListed(address sender) {
