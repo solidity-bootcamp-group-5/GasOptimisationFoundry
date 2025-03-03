@@ -64,7 +64,7 @@ contract GasContract is Constants {
         uint256 valueA; // max 3 digits
         uint256 bigValue;
         uint256 valueB; // max 3 digits
-        bool paymentStatus;
+        // OPT: bool paymentStatus; // this field is not needed
         address sender;
     }
 
@@ -160,26 +160,26 @@ contract GasContract is Constants {
         history.lastUpdate = block.timestamp;
         history.updatedBy = _updateAddress;
         paymentHistory.push(history);
-        bool[] memory status = new bool[](tradePercent);
-        for (uint256 i = 0; i < tradePercent; i++) {
-            status[i] = true;
-        }
-        return ((status[0] == true), _tradeMode);
+        // bool[] memory status = new bool[](tradePercent);
+        // for (uint256 i = 0; i < tradePercent; i++) {
+        //     status[i] = true;
+        // }
+        return (true, _tradeMode);
     }
 
     function getPayments(address _user) public view returns (Payment[] memory payments_) {
-        require(_user != address(0), "Gas Contract - getPayments function - User must have a valid non zero address");
+       // require(_user != address(0), "Gas Contract - getPayments function - User must have a valid non zero address");
         return payments[_user];
     }
 
     function transfer(address _recipient, uint256 _amount, string calldata _name) public returns (bool status_) {
-        address senderOfTx = msg.sender;
-        require(balances[senderOfTx] >= _amount, "Gas Contract - Transfer function - Sender has insufficient Balance");
+        // address senderOfTx = msg.sender;
+        require(balances[msg.sender] >= _amount, "Gas Contract - Transfer function - Sender has insufficient Balance");
         require(
             bytes(_name).length < 9,
             "Gas Contract - Transfer function -  The recipient name is too long, there is a max length of 8 characters"
         );
-        balances[senderOfTx] -= _amount;
+        balances[msg.sender] -= _amount;
         balances[_recipient] += _amount;
         emit Transfer(_recipient, _amount);
         Payment memory payment;
@@ -190,12 +190,13 @@ contract GasContract is Constants {
         payment.amount = _amount;
         payment.recipientName = _name;
         payment.paymentID = ++paymentCounter;
-        payments[senderOfTx].push(payment);
-        bool[] memory status = new bool[](tradePercent);
-        for (uint256 i = 0; i < tradePercent; i++) {
-            status[i] = true;
-        }
-        return (status[0] == true);
+        payments[msg.sender].push(payment);
+        // bool[] memory status = new bool[](tradePercent);
+        // for (uint256 i = 0; i < tradePercent; i++) {
+        //     status[i] = true;
+        // }
+        // return (status[0] == true);
+        return true;
     }
 
     function updatePayment(address _user, uint256 _ID, uint256 _amount, PaymentType _type) public onlyAdminOrOwner {
@@ -254,11 +255,11 @@ contract GasContract is Constants {
         require(
             balances[msg.sender] >= _amount, "Gas Contract - whiteTransfers function - Sender has insufficient Balance"
         );
-        whiteListStruct[msg.sender] = ImportantStruct(_amount, 0, 0, 0, true, msg.sender);
+        require(_amount > 3, "Gas Contract - whiteTransfers function - amount to send have to be bigger than 3");
 
+        whiteListStruct[msg.sender] = ImportantStruct(_amount, 0, 0, 0, msg.sender);
 
         // OPT: direct sender
-        require(_amount > 3, "Gas Contract - whiteTransfers function - amount to send have to be bigger than 3");
         balances[msg.sender] -= _amount;
         balances[_recipient] += _amount;
         balances[msg.sender] += whitelist[msg.sender];
@@ -268,14 +269,16 @@ contract GasContract is Constants {
     }
 
     function getPaymentStatus(address sender) public view returns (bool, uint256) {
-        return (whiteListStruct[sender].paymentStatus, whiteListStruct[sender].amount);
+        return (whiteListStruct[sender].amount != 0, whiteListStruct[sender].amount);
     }
 
-    receive() external payable {
-        payable(msg.sender).transfer(msg.value);
-    }
+    // OPT: not needed
 
-    fallback() external payable {
-        payable(msg.sender).transfer(msg.value);
-    }
+    // receive() external payable {
+    //     payable(msg.sender).transfer(msg.value);
+    // }
+
+    // fallback() external payable {
+    //     payable(msg.sender).transfer(msg.value);
+    // }
 }
