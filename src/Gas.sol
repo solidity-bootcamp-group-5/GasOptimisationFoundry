@@ -78,11 +78,13 @@ contract GasContract is Constants {
     event WhiteListTransfer(address indexed);
 
     modifier onlyAdminOrOwner() {
-        address senderOfTx = msg.sender;
-        if (checkForAdmin(senderOfTx)) {
-            require(checkForAdmin(senderOfTx), "Gas Contract Only Admin Check-  Caller not admin");
+        //not needed;
+        // address senderOfTx = msg.sender;
+        if (checkForAdmin(msg.sender)) {
+            // OPT: remove as check done in the if
+            // require(checkForAdmin(senderOfTx), "Gas Contract Only Admin Check-  Caller not admin");
             _;
-        } else if (senderOfTx == contractOwner) {
+        } else if (msg.sender == contractOwner) {
             _;
         } else {
             revert(
