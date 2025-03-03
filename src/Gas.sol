@@ -98,16 +98,14 @@ contract GasContract {
     }
 
     constructor(address[] memory _admins, uint256 _totalSupply) {
-        contractOwner = msg.sender;
-        totalSupply = _totalSupply;
 
         // OPT: uint256 is more efficient
         for (uint256 ii = 0; ii < 5; ii++) {
             if (_admins[ii] != address(0)) {
                 administrators[ii] = _admins[ii];
-                if (_admins[ii] == contractOwner) {
-                    balances[contractOwner] = totalSupply;
-                    emit supplyChanged(_admins[ii], totalSupply);
+                if (_admins[ii] == msg.sender) {
+                    balances[msg.sender] = _totalSupply;
+                    emit supplyChanged(_admins[ii], _totalSupply);
                 } else {
                     balances[_admins[ii]] = 0;
                     emit supplyChanged(_admins[ii], 0);
@@ -213,14 +211,18 @@ contract GasContract {
     function addToWhitelist(address _userAddrs, uint256 _tier) public onlyAdminOrOwner {
         require(_tier < 255, "Gas Contract - addToWhitelist function -  tier level should not be greater than 255");
 
+        // OPT: no need to check - require(wasLastOdd == 1 || wasLastOdd == 0, "Gas Contract - addToWhitelist function - wasLastOdd is not 1 or 0");
+
+        wasLastOdd ^= 1; 
+        // asLastOdd = wasLastOdd
         // uint256 wasLastAddedOdd = wasLastOdd;
-        if (wasLastOdd == 1) {
-            wasLastOdd = 0;
-        } else if (wasLastOdd == 0) {
-            wasLastOdd = 1;
-        } else {
-            revert("Contract hacked, imposible, call help");
-        }
+        // if (wasLastOdd == 1) {
+        //     wasLastOdd = 0;
+        // } else if (wasLastOdd == 0) {
+        //     wasLastOdd = 1;
+        // } else {
+        //     revert("Contract hacked, imposible, call help");
+        // }
         if (_tier > 3) {
             //whitelist[_userAddrs] -= _tier;
             whitelist[_userAddrs] = 3;
