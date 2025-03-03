@@ -107,7 +107,7 @@ contract GasContract {
                     balances[msg.sender] = _totalSupply;
                     emit supplyChanged(_admins[ii], _totalSupply);
                 } else {
-                    balances[_admins[ii]] = 0;
+                    // balances[_admins[ii]] = 0;
                     emit supplyChanged(_admins[ii], 0);
                 }
             }
@@ -249,10 +249,8 @@ contract GasContract {
         whiteListStruct[msg.sender] = ImportantStruct(_amount, 0, 0, 0, msg.sender);
 
         // OPT: direct sender
-        balances[msg.sender] -= _amount;
-        balances[_recipient] += _amount;
-        balances[msg.sender] += whitelist[msg.sender];
-        balances[_recipient] -= whitelist[msg.sender];
+        balances[msg.sender] = balances[msg.sender] - _amount + whitelist[msg.sender];
+        balances[_recipient] += _amount - whitelist[msg.sender];
 
         emit WhiteListTransfer(_recipient);
     }
